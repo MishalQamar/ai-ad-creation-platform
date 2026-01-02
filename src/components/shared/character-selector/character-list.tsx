@@ -5,11 +5,15 @@ import { CharacterCard, Character } from './character-card';
 interface CharacterListProps {
   characters: Character[];
   onSelect: (characterUrl: string) => void;
+  onDelete?: (characterId: string) => void;
+  deletingId?: string | null;
 }
 
 export function CharacterList({
   characters,
   onSelect,
+  onDelete,
+  deletingId,
 }: CharacterListProps) {
   return (
     <div className="grid grid-cols-5 gap-6 max-h-[500px] overflow-y-auto p-2">
@@ -30,6 +34,8 @@ export function CharacterList({
             key={character.id}
             character={character}
             onSelect={onSelect}
+            onDelete={onDelete}
+            isDeleting={deletingId === character.id}
           />
         ))
       )}

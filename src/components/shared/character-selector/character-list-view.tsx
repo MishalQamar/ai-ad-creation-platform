@@ -9,6 +9,11 @@ import { CrownIcon, UploadIcon } from 'lucide-react';
 import { CharacterSearch } from './character-search';
 import { CharacterList } from './character-list';
 import { Character } from './character-card';
+import { useAction } from 'convex/react';
+import { useState } from 'react';
+import { api } from '../../../../convex/_generated/api';
+import { toast } from 'sonner';
+import { Id } from '../../../../convex/_generated/dataModel';
 
 interface CharacterListViewProps {
   searchQuery: string;
@@ -29,6 +34,30 @@ export function CharacterListView({
   activeTab,
   onTabChange,
 }: CharacterListViewProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const deleteCharacter = useAction(
+    api.characters.actions.deleteUserCharacterImage
+  );
+
+  const handleDeleteCharacter = async (characterId: string) => {
+    if (deletingId) return;
+    if (!confirm('Are you sure you want to delete this character?'))
+      return;
+    setDeletingId(characterId);
+    try {
+      await deleteCharacter({
+        characterId: characterId as Id<'characters'>,
+      });
+      toast.success('Character deleted successfully');
+    } catch (error) {
+      console.error('Error deleting character:', error);
+      toast.error('Failed to delete character');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <>
       <CharacterSearch
@@ -69,6 +98,8 @@ export function CharacterListView({
           <CharacterList
             characters={characters}
             onSelect={onSelect}
+            onDelete={handleDeleteCharacter}
+            deletingId={deletingId}
           />
         </TabsContent>
       </Tabs>

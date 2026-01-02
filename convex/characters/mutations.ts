@@ -20,3 +20,18 @@ export const createCharacter = mutation({
     return characterId;
   },
 });
+
+export const deleteCharacter = mutation({
+  args: {
+    characterId: v.id('characters'),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    const character = await ctx.db.get(args.characterId);
+    if (!character || character.userId !== user.clerkId) {
+      throw new Error('cannot delete character');
+    }
+    await ctx.db.delete(args.characterId);
+    return { imageFileId: character.imageFileId };
+  },
+});
