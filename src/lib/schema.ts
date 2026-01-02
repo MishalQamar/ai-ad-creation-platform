@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from './constants';
 
 export const imageSchema = z.object({
   model: z.string().min(1, { message: 'Please select a model' }),
@@ -23,3 +24,20 @@ export const imageSchema = z.object({
 });
 
 export type ImageSchema = z.infer<typeof imageSchema>;
+
+export const characterSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: 'Name must be at least 3 characters long' }),
+
+  imageUrl: z
+    .instanceof(File, { message: 'Character image is required' })
+    .refine((file) => file.size <= MAX_FILE_SIZE, {
+      message: 'Image must be less than 5MB',
+    })
+    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+      message: 'Only JPEG, PNG and WebP images are allowed',
+    }),
+});
+
+export type CharacterSchema = z.infer<typeof characterSchema>;

@@ -12,4 +12,13 @@ export default defineSchema({
   })
     .index('by_clerk_id', ['clerkId'])
     .index('by_email', ['email']),
+
+  characters: defineTable({
+    name: v.string(),
+    imageUrl: v.string(),
+    imageFileId: v.optional(v.string()),
+    userId: v.optional(
+      v.string()
+    ) /* optional because characters can be created by system, stores Clerk user ID */,
+  }).index('by_user_id', ['userId']),
 });

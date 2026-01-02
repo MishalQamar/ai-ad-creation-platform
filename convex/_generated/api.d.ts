@@ -8,6 +8,9 @@
  * @module
  */
 
+import type * as characters_actions from "../characters/actions.js";
+import type * as characters_mutations from "../characters/mutations.js";
+import type * as characters_queries from "../characters/queries.js";
 import type * as http from "../http.js";
 import type * as script from "../script.js";
 import type * as users from "../users.js";
@@ -19,6 +22,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "characters/actions": typeof characters_actions;
+  "characters/mutations": typeof characters_mutations;
+  "characters/queries": typeof characters_queries;
   http: typeof http;
   script: typeof script;
   users: typeof users;
