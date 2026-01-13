@@ -21,4 +21,48 @@ export default defineSchema({
       v.string()
     ) /* optional because characters can be created by system, stores Clerk user ID */,
   }).index('by_user_id', ['userId']),
+
+  imageGenerations: defineTable({
+    userId: v.string(),
+    model: v.string(),
+    prompt: v.string(),
+    aspectRatio: v.string(),
+    characterImageUrl: v.optional(v.string()),
+    objectImageUrl: v.optional(v.string()),
+    status: v.union(
+      v.literal('processing'),
+      v.literal('success'),
+      v.literal('fail')
+    ),
+    resultsImageUrls: v.optional(v.string()),
+    creditsUsage: v.number(),
+    createdAt: v.number(),
+    externalJobId: v.string(),
+  })
+    .index('by_user_id', ['userId'])
+    .index('by_status', ['status'])
+    .index('by_created_at', ['createdAt'])
+    .index('by_external_job_id', ['externalJobId']),
+
+  videoGenerations: defineTable({
+    userId: v.string(),
+    model: v.string(),
+    prompt: v.string(),
+    aspectRatio: v.string(),
+    characterImageUrl: v.optional(v.string()),
+    objectImageUrl: v.optional(v.string()),
+    status: v.union(
+      v.literal('processing'),
+      v.literal('success'),
+      v.literal('fail')
+    ),
+    resultsVideoUrls: v.optional(v.string()),
+    creditsUsage: v.number(),
+    createdAt: v.number(),
+    externalJobId: v.string(),
+  })
+    .index('by_user_id', ['userId'])
+    .index('by_status', ['status'])
+    .index('by_created_at', ['createdAt'])
+    .index('by_external_job_id', ['externalJobId']),
 });
