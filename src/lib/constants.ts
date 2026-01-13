@@ -61,16 +61,27 @@ export const PRICING_PLANS: PricingPlan[] = [
 
 export const IMAGE_GENERATION_MODELS = [
   {
-    value: 'flux',
-    label: 'Flux',
+    value: 'google/nano-banana-edit ',
+    label: 'Nano Banana Edit',
   },
   {
-    value: 'dall-e-3',
-    label: 'DALL-E 3',
+    value: 'seedream/4.5-edit',
+    label: 'Seedream 4.5 Edit',
   },
   {
-    value: 'nano-banana',
-    label: 'Nano Banana',
+    value: 'flux-2/pro-image-to-image',
+    label: 'Flux 2',
+  },
+];
+
+export const VIDEO_GENERATION_MODELS = [
+  {
+    value: 'Veo3 ',
+    label: 'Veo3 Qualtiy',
+  },
+  {
+    value: 'Veo3_fast',
+    label: 'Veo3 Fast',
   },
 ];
 
@@ -94,6 +105,17 @@ export const IMAGE_ASPECT_RATIOS = [
   {
     value: '3:4',
     label: '3:4',
+  },
+];
+
+export const VIDEO_ASPECT_RATIOS = [
+  {
+    value: '16:9',
+    label: '16:9',
+  },
+  {
+    value: '9:16',
+    label: '9:16',
   },
 ];
 

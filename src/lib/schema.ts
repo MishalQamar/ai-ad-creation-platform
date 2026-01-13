@@ -1,27 +1,35 @@
 import { z } from 'zod';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from './constants';
 
-export const imageSchema = z.object({
-  model: z.string().min(1, { message: 'Please select a model' }),
-  prompt: z
-    .string()
-    .min(3, { message: 'Prompt must be at least 3 characters long' })
-    .max(1000, {
-      message: 'Prompt must be less than 1000 characters',
-    })
-    .trim(),
-  aspectRatio: z
-    .string()
-    .min(1, { message: 'Please select an aspect ratio' }),
-  characterImageUrl: z
-    .string()
-    .url('Please enter a valid url')
-    .optional(),
-  objectImageUrl: z
-    .string()
-    .url('Please enter a valid url')
-    .optional(),
-});
+export const imageSchema = z
+  .object({
+    model: z.string().min(1, { message: 'Please select a model' }),
+    prompt: z
+      .string()
+      .min(3, {
+        message: 'Prompt must be at least 3 characters long',
+      })
+      .max(1000, {
+        message: 'Prompt must be less than 1000 characters',
+      })
+      .trim(),
+    aspectRatio: z
+      .string()
+      .min(1, { message: 'Please select an aspect ratio' }),
+    characterImageUrl: z
+      .string()
+      .url('Please enter a valid url')
+      .optional(),
+    objectImageUrl: z
+      .string()
+      .url('Please enter a valid url')
+      .optional(),
+  })
+  .refine((data) => data.characterImageUrl || data.objectImageUrl, {
+    message:
+      'At least one of character image or object image is required',
+    path: ['characterImageUrl'],
+  });
 
 export type ImageSchema = z.infer<typeof imageSchema>;
 
@@ -41,3 +49,35 @@ export const characterSchema = z.object({
 });
 
 export type CharacterSchema = z.infer<typeof characterSchema>;
+
+export const videoSchema = z
+  .object({
+    model: z.string().min(1, { message: 'Please select a model' }),
+    prompt: z
+      .string()
+      .min(3, {
+        message: 'Prompt must be at least 3 characters long',
+      })
+      .max(1000, {
+        message: 'Prompt must be less than 1000 characters',
+      })
+      .trim(),
+    aspectRatio: z
+      .string()
+      .min(1, { message: 'Please select an aspect ratio' }),
+    characterImageUrl: z
+      .string()
+      .url('Please enter a valid url')
+      .optional(),
+    objectImageUrl: z
+      .string()
+      .url('Please enter a valid url')
+      .optional(),
+  })
+  .refine((data) => data.characterImageUrl || data.objectImageUrl, {
+    message:
+      'At least one of character image or object image is required',
+    path: ['characterImageUrl'],
+  });
+
+export type VideoSchema = z.infer<typeof videoSchema>;
