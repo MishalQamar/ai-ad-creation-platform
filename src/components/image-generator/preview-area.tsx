@@ -8,12 +8,13 @@ import {
   Loader2,
   ShieldAlert,
 } from 'lucide-react';
-import Image from 'next/image';
+
 import { api } from '../../../convex/_generated/api';
 import { Skeleton } from '../ui/skeleton';
 import { format } from 'date-fns';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
+import Masonry from 'react-masonry-css';
 
 export const ImagePreviewArea = () => {
   const images = useQuery(api.image_generations.queries.getRecent, {
@@ -60,7 +61,7 @@ export const ImagePreviewArea = () => {
   //group images by month and year
   const groupedImages = images.reduce((acc, image) => {
     const date = new Date(image.createdAt);
-    const key = format(date, 'yyyy-MM');
+    const key = format(date, 'MMMM yyyy');
     if (!acc[key]) {
       acc[key] = [];
     }
@@ -110,21 +111,31 @@ export const ImagePreviewArea = () => {
               {dateGroup}
             </h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
+            <Masonry
+              breakpointCols={{
+                default: 3,
+                1280: 2,
+                1024: 1,
+              }}
+              className="flex -ml-4"
+              columnClassName="pl-4 bg-clipping-padding space-y-4"
+            >
               {groupedImages.map((image) => (
                 <div
                   className="relative aspect-square rounded-lg overflow-hidden border bg-muted/20 group"
                   key={image._id}
                 >
                   {image.status === 'processing' ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <Loader2 className="size-4 animate-spin text-primary" />
-                      <span className="text-xs text-muted-foreground font-medium">
-                        Generating...
-                      </span>
+                    <div className="aspect-square">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="size-4 animate-spin text-primary" />
+                        <span className="text-xs text-muted-foreground font-medium">
+                          Generating...
+                        </span>
+                      </div>
                     </div>
                   ) : image.status === 'fail' ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-destructive/10">
+                    <div className="aspect-square flex flex-col items-center justify-center gap-2 bg-destructive/10">
                       <ShieldAlert className="size-4 text-destructive" />
                       <span className="text-xs text-muted-foreground font-medium">
                         Failed to generate
@@ -133,12 +144,11 @@ export const ImagePreviewArea = () => {
                   ) : image.status === 'success' &&
                     image.resultsImageUrls ? (
                     <>
-                      <Image
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
                         src={image.resultsImageUrls}
                         alt={image.prompt || 'Generated image'}
-                        fill
-                        className="object-cover transition-transform hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="w-full h-full object-cover transition-transform hover:scale-105 block"
                       />
                       <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <Button
@@ -171,7 +181,7 @@ export const ImagePreviewArea = () => {
                   ) : null}
                 </div>
               ))}
-            </div>
+            </Masonry>
           </div>
         )
       )}
