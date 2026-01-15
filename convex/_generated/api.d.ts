@@ -21,6 +21,7 @@ import type * as lib_openai from "../lib/openai.js";
 import type * as lib_polar from "../lib/polar.js";
 import type * as script from "../script.js";
 import type * as subscriptions_mutations from "../subscriptions/mutations.js";
+import type * as subscriptions_queries from "../subscriptions/queries.js";
 import type * as users from "../users.js";
 import type * as video_generations_actions from "../video_generations/actions.js";
 import type * as video_generations_mutations from "../video_generations/mutations.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   "lib/polar": typeof lib_polar;
   script: typeof script;
   "subscriptions/mutations": typeof subscriptions_mutations;
+  "subscriptions/queries": typeof subscriptions_queries;
   users: typeof users;
   "video_generations/actions": typeof video_generations_actions;
   "video_generations/mutations": typeof video_generations_mutations;
