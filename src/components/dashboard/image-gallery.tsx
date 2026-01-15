@@ -1,23 +1,16 @@
 'use client';
 
 import { usePaginatedQuery } from 'convex/react';
-import {
-  Copy,
-  DownloadIcon,
-  ImageIcon,
-  Loader2,
-  ShieldAlert,
-} from 'lucide-react';
+import { ImageIcon, Loader2, ShieldAlert } from 'lucide-react';
 
 import { api } from '../../../convex/_generated/api';
 import { Skeleton } from '../ui/skeleton';
 import { format } from 'date-fns';
-import { Button } from '../ui/button';
-import { toast } from 'sonner';
 import Masonry from 'react-masonry-css';
 import { PAGE_SIZE } from '@/lib/constants';
 import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MediaCard } from '../shared/media-card';
 
 export const ImageGallery = () => {
   const { results, status, loadMore } = usePaginatedQuery(
@@ -29,6 +22,10 @@ export const ImageGallery = () => {
   );
 
   const { ref, inView } = useInView();
+
+  const [selectedImage, setSelectedImage] = useState<
+    (typeof results)[number] | null
+  >(null);
 
   useEffect(() => {
     if (inView && status === 'CanLoadMore') {
@@ -84,37 +81,11 @@ export const ImageGallery = () => {
     return acc;
   }, {} as Record<string, typeof results>);
 
-  const handleCopyPromt = (prompt: string) => {
-    navigator.clipboard.writeText(prompt);
-    toast.success('Prompt copied to clipboard');
+  const handleImageClick = (image: (typeof results)[number]) => {
+    setSelectedImage(image);
   };
-
-  const handleDownloadImage = async (imageUrl: string) => {
-    try {
-      //fetch the image a as blob
-      const res = await fetch(imageUrl, { mode: 'cors' });
-      const blob = await res.blob();
-
-      //build filename
-      const timestamp = new Date().getTime();
-      const filename = `generated-image(${timestamp})`;
-
-      const objectUrl = URL.createObjectURL(blob);
-
-      //create a <a> tag to trigger the download
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-
-      //cleanup the object url to free the memory
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-      toast.success('Image downloaded successfully');
-    } catch {
-      toast.error('Failed to download image');
-    }
+  const handleCloseImage = () => {
+    setSelectedImage(null);
   };
 
   return (
@@ -139,6 +110,7 @@ export const ImageGallery = () => {
                 <div
                   className="relative aspect-square rounded-lg overflow-hidden border bg-muted/20 group"
                   key={image._id}
+                  onClick={() => handleImageClick(image)}
                 >
                   {image.status === 'processing' ? (
                     <div className="aspect-square">
@@ -165,33 +137,6 @@ export const ImageGallery = () => {
                         alt={image.prompt || 'Generated image'}
                         className="w-full h-full object-cover transition-transform hover:scale-105 block"
                       />
-                      <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          className="size-8  bg-black/50 text-white border-0 hover:bg-black/70"
-                          title="Download image"
-                          onClick={() =>
-                            image.resultsImageUrls &&
-                            handleDownloadImage(
-                              image.resultsImageUrls
-                            )
-                          }
-                        >
-                          <DownloadIcon className="size-4" />
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          className="size-8  bg-black/50 text-white border-0 hover:bg-black/70"
-                          title="Copy prompt"
-                          onClick={() =>
-                            handleCopyPromt(image.prompt)
-                          }
-                        >
-                          <Copy className="size-4" />
-                        </Button>
-                      </div>
                     </>
                   ) : null}
                 </div>
@@ -210,6 +155,26 @@ export const ImageGallery = () => {
           </div>
         )}
       </div>
+      <MediaCard
+        open={!!selectedImage}
+        onOpenChange={handleCloseImage}
+        type="image"
+        data={
+          selectedImage
+            ? {
+                url: selectedImage.resultsImageUrls || '',
+                prompt: selectedImage.prompt,
+                model: selectedImage.model,
+                aspectRatio: selectedImage.aspectRatio,
+                createdAt: selectedImage.createdAt,
+                user: {
+                  name: selectedImage.user?.name || '',
+                  imageUrl: selectedImage.user?.imageUrl,
+                },
+              }
+            : null
+        }
+      />
     </div>
   );
 };

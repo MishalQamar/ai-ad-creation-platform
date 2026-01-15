@@ -17,8 +17,8 @@ export default function Pricing() {
         </div>
 
         <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3">
-          {PRICING_PLANS.map((plan) => (
-            <PricingCard key={plan.productId} plan={plan} />
+          {PRICING_PLANS.map((plan, index) => (
+            <PricingCard key={plan.productId || `plan-${index}`} plan={plan} />
           ))}
         </div>
       </div>

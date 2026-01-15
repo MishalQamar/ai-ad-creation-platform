@@ -36,7 +36,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Export to ad platforms',
       'Advanced targeting suggestions',
     ],
-    productId: 'professional',
+    productId: process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_ID!,
     isPopular: true,
   },
   {
@@ -55,7 +55,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Advanced security & compliance',
       'SLA guarantee',
     ],
-    productId: 'enterprise',
+    productId: process.env.NEXT_PUBLIC_POLAR_ENTERPRISE_PRODUCT_ID!,
   },
 ];
 

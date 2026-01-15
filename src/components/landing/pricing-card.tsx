@@ -1,4 +1,5 @@
-import Link from 'next/link';
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,14 +9,57 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Check } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { PricingPlan } from '@/lib/constants';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { useAction } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
+import { toast } from 'sonner';
 
 interface PricingCardProps {
   plan: PricingPlan;
 }
 
 export function PricingCard({ plan }: PricingCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+  const generatedCheckoutLink = useAction(
+    api.lib.polar.generateCheckoutLink
+  );
+
+  const handleCheckout = async () => {
+    if (!isSignedIn) {
+      router.push('/sign-in');
+      return;
+    }
+
+    if (!plan.productId) {
+      toast.error(
+        'Product ID is not configured. Please contact support.'
+      );
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const { url } = await generatedCheckoutLink({
+        productIds: [plan.productId],
+        origin: window.location.origin,
+        successUrl: `${window.location.origin}/dashboard`,
+      });
+      window.location.href = url;
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to checkout');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="relative flex flex-col">
       {plan.isPopular && (
@@ -49,11 +93,19 @@ export function PricingCard({ plan }: PricingCardProps) {
 
       <CardFooter className="mt-auto">
         <Button
-          asChild
           variant={plan.isPopular ? 'default' : 'outline'}
           className="w-full"
+          onClick={handleCheckout}
+          disabled={isLoading}
         >
-          <Link href="">Get Started</Link>
+          {isLoading ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              <span>Loading...</span>
+            </>
+          ) : (
+            'Get Started'
+          )}
         </Button>
       </CardFooter>
     </Card>

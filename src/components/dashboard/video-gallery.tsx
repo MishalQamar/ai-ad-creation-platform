@@ -17,7 +17,8 @@ import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { PAGE_SIZE } from '@/lib/constants';
 import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MediaCard } from '../shared/media-card';
 
 export const VideoGallery = () => {
   const { results, status, loadMore } = usePaginatedQuery(
@@ -34,6 +35,18 @@ export const VideoGallery = () => {
       loadMore(PAGE_SIZE);
     }
   }, [inView, status, loadMore]);
+
+  const [selectedVideo, setSelectedVideo] = useState<
+    (typeof results)[number] | null
+  >(null);
+
+  const handleVideoClick = (video: (typeof results)[number]) => {
+    setSelectedVideo(video);
+  };
+
+  const handleCloseVideo = () => {
+    setSelectedVideo(null);
+  };
 
   if (status === 'LoadingFirstPage') {
     return (
@@ -139,6 +152,7 @@ export const VideoGallery = () => {
                   <div
                     className="relative rounded-lg overflow-hidden border bg-muted/20 group"
                     key={video._id}
+                    onClick={() => handleVideoClick(video)}
                   >
                     {video.status === 'processing' ? (
                       <div className="aspect-square ">
@@ -169,33 +183,6 @@ export const VideoGallery = () => {
                           playsInline
                           disablePictureInPicture
                         />
-                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="size-8  bg-black/50 text-white border-0 hover:bg-black/70"
-                            title="Download video"
-                            onClick={() =>
-                              video.resultsVideoUrls &&
-                              handleDownloadVideo(
-                                video.resultsVideoUrls
-                              )
-                            }
-                          >
-                            <DownloadIcon className="size-4" />
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="size-8  bg-black/50 text-white border-0 hover:bg-black/70"
-                            title="Copy prompt"
-                            onClick={() =>
-                              handleCopyPromt(video.prompt)
-                            }
-                          >
-                            <Copy className="size-4" />
-                          </Button>
-                        </div>
                       </>
                     ) : null}
                   </div>
@@ -216,6 +203,26 @@ export const VideoGallery = () => {
           </div>
         )}
       </div>
+      <MediaCard
+        open={!!selectedVideo}
+        onOpenChange={handleCloseVideo}
+        type="video"
+        data={
+          selectedVideo
+            ? {
+                url: selectedVideo.resultsVideoUrls || '',
+                prompt: selectedVideo.prompt,
+                model: selectedVideo.model,
+                aspectRatio: selectedVideo.aspectRatio,
+                createdAt: selectedVideo.createdAt,
+                user: {
+                  name: selectedVideo.user?.name || '',
+                  imageUrl: selectedVideo.user?.imageUrl,
+                },
+              }
+            : null
+        }
+      />
     </div>
   );
 };

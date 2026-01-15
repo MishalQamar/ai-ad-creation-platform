@@ -1,8 +1,11 @@
+'use client';
+
 import * as React from 'react';
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -11,12 +14,15 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
 import {
   Sparkles,
   ImageIcon,
   LayoutDashboard,
   VideoIcon,
+  CrownIcon,
 } from 'lucide-react';
+import { CreditsPurchaseModal } from '@/components/shared/credits-purchase-modal';
 
 // Navigation menu items
 
@@ -41,6 +47,8 @@ const items = [
 export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const [showCreditsPurchaseModal, setShowCreditsPurchaseModal] =
+    React.useState(false);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="py-4 px-4">
@@ -76,7 +84,40 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="group-data-[collapsible=icon]:hidden relative overflow-hidden rounded-xl border bg-sidebar-accent/50 p-4">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Sparkles className="size-20 text-primary" />
+              </div>
+              <h3 className="mb-1 font-semibold">Unlock premium</h3>
+              <p className="mb-4">
+                Enhance your experience with premium features
+              </p>
+              <Button
+                onClick={() => setShowCreditsPurchaseModal(true)}
+                variant="outline"
+                className="w-full bg-gradient-to-br from-blue-500 to-purple-500"
+              >
+                <CrownIcon className="size-4 mr-2 text-amber-500" />
+                Upgrade
+              </Button>
+            </div>
+            <SidebarMenuButton
+              onClick={() => setShowCreditsPurchaseModal(true)}
+              className="hidden group-data-[collapsible=icon]:block"
+            >
+              <CrownIcon className="size-4 mr-2 text-amber-500" />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
+      <CreditsPurchaseModal
+        open={showCreditsPurchaseModal}
+        onOpenChange={setShowCreditsPurchaseModal}
+      />
     </Sidebar>
   );
 }
