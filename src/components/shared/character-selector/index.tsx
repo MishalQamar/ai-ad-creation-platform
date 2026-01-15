@@ -12,6 +12,7 @@ import { Character } from './character-card';
 import { CreateCharacterView } from './create-character-view';
 import { useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
+import { CreditsPurchaseModal } from '../credits-purchase-modal';
 
 export interface CharacterSelectorProps {
   open: boolean;
@@ -68,6 +69,17 @@ export function CharacterSelector({
     setView('list');
     setActiveTab('my-characters');
   };
+
+  const subscription = useQuery(
+    api.subscriptions.queries.getUserSubscriptions
+  );
+
+  if (open && subscription?.subscription?.status !== 'active') {
+    if (subscription === undefined) return null;
+    return (
+      <CreditsPurchaseModal open={open} onOpenChange={onOpenChange} />
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
