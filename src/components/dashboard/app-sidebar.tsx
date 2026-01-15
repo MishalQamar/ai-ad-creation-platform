@@ -21,8 +21,10 @@ import {
   LayoutDashboard,
   VideoIcon,
   CrownIcon,
+  CreditCardIcon,
 } from 'lucide-react';
 import { CreditsPurchaseModal } from '@/components/shared/credits-purchase-modal';
+import { title } from 'process';
 
 // Navigation menu items
 
@@ -41,6 +43,11 @@ const items = [
     title: 'Video Generation',
     url: '/video-generation',
     icon: VideoIcon,
+  },
+  {
+    title: 'Billing',
+    url: '/billing',
+    icon: CreditCardIcon,
   },
 ];
 
